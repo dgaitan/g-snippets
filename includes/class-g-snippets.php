@@ -56,6 +56,7 @@ class G_Snippets
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-content-injector.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-list-table.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-settings.php';
+        require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-category-importer.php';
     }
 
     /**
@@ -89,6 +90,9 @@ class G_Snippets
         
         // Initialize settings
         Settings::get_instance();
+        
+        // Initialize category importer
+        Category_Importer::get_instance();
     }
 
     /**
@@ -113,6 +117,17 @@ class G_Snippets
         // Load on settings page (check hook or GET parameter)
         if ($hook === 'g_snippet_page_g-snippets-settings' || 
             (isset($_GET['page']) && $_GET['page'] === 'g-snippets-settings')) {
+            wp_enqueue_style(
+                'g-snippets-admin',
+                G_SNIPPETS_PLUGIN_URL . 'admin/css/admin.css',
+                [],
+                G_SNIPPETS_VERSION
+            );
+        }
+        
+        // Load on category importer page
+        if ($hook === 'g_snippet_page_g-snippets-category-importer' || 
+            (isset($_GET['page']) && $_GET['page'] === 'g-snippets-category-importer')) {
             wp_enqueue_style(
                 'g-snippets-admin',
                 G_SNIPPETS_PLUGIN_URL . 'admin/css/admin.css',

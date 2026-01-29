@@ -147,3 +147,102 @@
 #space_gap {
     min-width: 200px;
 }
+
+/* Category Importer Styles */
+.g-snippets-importer-page {
+    max-width: 1200px;
+}
+
+.g-snippets-importer-upload,
+.g-snippets-importer-preview,
+.g-snippets-importer-results {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.g-snippets-importer-upload h2,
+.g-snippets-importer-preview h2,
+.g-snippets-importer-results h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.g-snippets-preview-table-wrapper {
+    max-height: 500px;
+    overflow-x: auto;
+    overflow-y: auto;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+}
+
+.g-snippets-preview-table-wrapper table {
+    margin: 0;
+    width: 100%;
+}
+
+.g-snippets-preview-table-wrapper table thead th {
+    background: #f9f9f9;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid #ddd;
+}
+
+.g-snippets-preview-table-wrapper table tbody td {
+    padding: 8px 10px;
+    word-break: break-word;
+}
+
+.g-snippets-importer-preview .form-table th {
+    width: 200px;
+    padding: 20px 10px 20px 0;
+}
+
+.g-snippets-importer-preview .form-table td {
+    padding: 15px 10px;
+}
+
+.g-snippets-importer-preview .form-table select {
+    min-width: 300px;
+}
+
+.g-snippets-importer-results .form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+    vertical-align: top;
+}
+
+.g-snippets-importer-results .form-table td {
+    padding: 15px 10px;
+}
+
+.g-snippets-importer-results .form-table ul {
+    margin: 10px 0;
+}
+
+.g-snippets-importer-results .form-table li {
+    margin: 5px 0;
+}
+
+/* File upload input styling */
+#import_file {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+/* Responsive adjustments for importer */
+@media screen and (max-width: 782px) {
+    .g-snippets-preview-table-wrapper {
+        max-height: 400px;
+    }
+    
+    .g-snippets-importer-preview .form-table select {
+        min-width: 100%;
+        width: 100%;
+    }
+}
