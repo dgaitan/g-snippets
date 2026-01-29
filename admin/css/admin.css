@@ -1,0 +1,101 @@
+/**
+ * G-Snippets Admin Styles
+ *
+ * @package G_Snippets
+ */
+
+/* List Table Column Styling */
+.wp-list-table .column-g_snippet_post_types,
+.wp-list-table .column-g_snippet_location,
+.wp-list-table .column-g_snippet_priority,
+.wp-list-table .column-g_snippet_active,
+.wp-list-table .column-g_snippet_include_count,
+.wp-list-table .column-g_snippet_exclude_count {
+    width: 10%;
+}
+
+.wp-list-table .column-g_snippet_post_types {
+    width: 15%;
+}
+
+/* Empty state */
+.g-snippets-empty {
+    color: #999;
+    font-style: italic;
+}
+
+/* Location badges */
+.g-snippets-location {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.g-snippets-location-before {
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.g-snippets-location-after {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* Priority display */
+.g-snippets-priority {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #f5f5f5;
+    border-radius: 3px;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+/* Active status */
+.g-snippets-active {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.g-snippets-active-yes {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+.g-snippets-active-no {
+    background-color: #f44336;
+    color: #fff;
+}
+
+/* Count badges */
+.g-snippets-count {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .wp-list-table .column-g_snippet_post_types,
+    .wp-list-table .column-g_snippet_location,
+    .wp-list-table .column-g_snippet_priority,
+    .wp-list-table .column-g_snippet_active,
+    .wp-list-table .column-g_snippet_include_count,
+    .wp-list-table .column-g_snippet_exclude_count {
+        width: auto;
+    }
+}

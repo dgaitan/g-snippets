@@ -1,0 +1,65 @@
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Editor/IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Node.js (if using npm/node)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Composer (if using PHP dependencies)
+vendor/
+composer.lock
+
+# Build/Dist directories
+dist/
+build/
+*.min.js
+*.min.css
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.cache
+
+# WordPress specific
+wp-config.php
+.htaccess
+
+# ACF JSON (uncomment if you don't want to track ACF field exports)
+# acf-json/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Testing
+.phpunit.result.cache
+coverage/
