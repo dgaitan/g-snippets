@@ -208,54 +208,35 @@ class Content_Injector
      */
     private function snippet_matches($snippet, $post_id, $post_type)
     {
-        // Check post type match
-        $snippet_post_types = get_field('g_snippet_post_types', $snippet->ID);
-        
+        $snippet_post_types = get_field('g_snippet_post_types', $snippet->ID);   
         if (empty($snippet_post_types) || !is_array($snippet_post_types)) {
-            // Default to posts only if not set
             $snippet_post_types = ['post'];
         }
 
-        // Post type must match
         if (!in_array($post_type, $snippet_post_types, true)) {
             return false;
         }
 
-        // Check categories
-        $snippet_categories = get_field('g_snippet_categories', $snippet->ID);
-        
+        $snippet_categories = get_field('g_snippet_categories', $snippet->ID);        
         if (!empty($snippet_categories)) {
-            // If categories are selected, post must have at least one matching category
             $snippet_category_ids = is_array($snippet_categories) ? $snippet_categories : [$snippet_categories];
-            
-            // Get post's category IDs
             $post_category_ids = wp_get_post_categories($post_id);
-            
-            // Check if there's any intersection between snippet categories and post categories
             $matching_categories = array_intersect($snippet_category_ids, $post_category_ids);
-            
             if (empty($matching_categories)) {
-                // Post doesn't have any of the selected categories
                 return false;
             }
         }
 
-        // Check include posts
-        $include_posts = get_field('g_snippet_include_posts', $snippet->ID);
-        
+        $include_posts = get_field('g_snippet_include_posts', $snippet->ID);        
         if (!empty($include_posts)) {
-            // If include list is set, post must be in the list
             $include_ids = is_array($include_posts) ? $include_posts : [$include_posts];
             if (!in_array($post_id, $include_ids, true)) {
                 return false;
             }
         }
 
-        // Check exclude posts
-        $exclude_posts = get_field('g_snippet_exclude_posts', $snippet->ID);
-        
+        $exclude_posts = get_field('g_snippet_exclude_posts', $snippet->ID);        
         if (!empty($exclude_posts)) {
-            // If exclude list is set, post must NOT be in the list
             $exclude_ids = is_array($exclude_posts) ? $exclude_posts : [$exclude_posts];
             if (in_array($post_id, $exclude_ids, true)) {
                 return false;
@@ -281,12 +262,9 @@ class Content_Injector
             return $snippets;
         }
 
-        // Sort snippets by priority
         usort($snippets, function($a, $b) {
             $priority_a = get_field('g_snippet_priority', $a->ID);
             $priority_b = get_field('g_snippet_priority', $b->ID);
-            
-            // Default priority if not set
             if (empty($priority_a) || !is_numeric($priority_a)) {
                 $priority_a = 10;
             } else {
