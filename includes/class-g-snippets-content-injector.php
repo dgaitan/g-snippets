@@ -78,13 +78,31 @@ class Content_Injector
             return $content;
         }
 
+        // Get settings
+        $settings = Settings::get_instance();
+        $display_option = $settings->get_display_option();
+        $space_gap = $settings->get_space_gap();
+
         // Separate snippets by location and sort by priority
         $before_snippets = [];
         $after_snippets = [];
+        $before_count = 0;
+        $after_count = 0;
+        
         foreach ($snippets as $snippet) {
             $location = get_field('g_snippet_location', $snippet->ID);
             if (!$location) {
                 $location = 'after'; // Default to after
+            }
+
+            // Apply display option: if "first", only show first snippet per location
+            if ($display_option === 'first') {
+                if ($location === 'before' && $before_count > 0) {
+                    continue;
+                }
+                if ($location === 'after' && $after_count > 0) {
+                    continue;
+                }
             }
 
             $snippet_content = sprintf(
@@ -99,9 +117,17 @@ class Content_Injector
 
             if ($location === 'before') {
                 $before_snippets[] = $snippet_content;
+                $before_count++;
             } else {
                 $after_snippets[] = $snippet_content;
+                $after_count++;
             }
+        }
+
+        // Apply space gap to snippets (except the last one in each group)
+        if (!empty($space_gap)) {
+            $before_snippets = $this->apply_space_gap($before_snippets, $space_gap);
+            $after_snippets = $this->apply_space_gap($after_snippets, $space_gap);
         }
 
         // Build final content: before snippets + content + after snippets
@@ -299,5 +325,38 @@ class Content_Injector
         }
 
         return apply_filters('g_snippets_snippet_content', $snippet->post_content, $snippet);
+    }
+
+    /**
+     * Apply space gap to snippets
+     *
+     * @param array  $snippets Array of snippet HTML strings
+     * @param string $space_gap Space gap value (e.g., "20px", "1em")
+     * @return array Array of snippet HTML strings with space gap applied
+     */
+    private function apply_space_gap($snippets, $space_gap)
+    {
+        if (empty($snippets) || count($snippets) <= 1) {
+            return $snippets;
+        }
+
+        $result = [];
+        $total = count($snippets);
+        
+        foreach ($snippets as $index => $snippet_html) {
+            // Apply margin-bottom to all except the last one
+            if ($index < $total - 1) {
+                // Add inline style for margin-bottom
+                $snippet_html = preg_replace(
+                    '/<div id="g-snippet-(\d+)" class="g-snippet g-snippet-\1">/',
+                    '<div id="g-snippet-$1" class="g-snippet g-snippet-$1" style="margin-bottom: ' . esc_attr($space_gap) . ';">',
+                    $snippet_html
+                );
+            }
+            
+            $result[] = $snippet_html;
+        }
+
+        return $result;
     }
 }

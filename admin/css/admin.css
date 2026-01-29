@@ -99,3 +99,51 @@
         width: auto;
     }
 }
+
+/* Settings Page Styles */
+.g-snippets-css-editor {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 12px;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+}
+
+.g-snippets-css-editor:focus {
+    background-color: #fff;
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* Settings form styling */
+.g-snippets-settings-page .form-table th {
+    width: 200px;
+    padding: 20px 10px 20px 0;
+}
+
+.g-snippets-settings-page .form-table td {
+    padding: 15px 10px;
+}
+
+.g-snippets-settings-page .form-table .description {
+    margin-top: 8px;
+    color: #646970;
+    font-style: normal;
+}
+
+/* Select and input fields */
+#display_options,
+#space_gap {
+    min-width: 200px;
+}

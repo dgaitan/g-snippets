@@ -55,6 +55,7 @@ class G_Snippets
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-acf.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-content-injector.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-list-table.php';
+        require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-settings.php';
     }
 
     /**
@@ -85,6 +86,9 @@ class G_Snippets
         
         // Customize list table
         List_Table::get_instance();
+        
+        // Initialize settings
+        Settings::get_instance();
     }
 
     /**
@@ -94,24 +98,27 @@ class G_Snippets
      */
     public function enqueue_admin_scripts($hook)
     {
-        // Only load on our admin pages
-        $allowed_hooks = [
-            'edit.php',
-            'post.php',
-            'post-new.php'
-        ];
-
         $screen = get_current_screen();
-        if (!$screen || $screen->post_type !== 'g_snippet') {
-            return;
+        
+        // Load on snippet post type pages
+        if ($screen && $screen->post_type === 'g_snippet') {
+            wp_enqueue_style(
+                'g-snippets-admin',
+                G_SNIPPETS_PLUGIN_URL . 'admin/css/admin.css',
+                [],
+                G_SNIPPETS_VERSION
+            );
         }
-
-        // Enqueue CSS
-        wp_enqueue_style(
-            'g-snippets-admin',
-            G_SNIPPETS_PLUGIN_URL . 'admin/css/admin.css',
-            [],
-            G_SNIPPETS_VERSION
-        );
+        
+        // Load on settings page (check hook or GET parameter)
+        if ($hook === 'g_snippet_page_g-snippets-settings' || 
+            (isset($_GET['page']) && $_GET['page'] === 'g-snippets-settings')) {
+            wp_enqueue_style(
+                'g-snippets-admin',
+                G_SNIPPETS_PLUGIN_URL . 'admin/css/admin.css',
+                [],
+                G_SNIPPETS_VERSION
+            );
+        }
     }
 }
