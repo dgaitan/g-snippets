@@ -32,6 +32,20 @@ class Content_Injector
     private $snippet_cache = [];
 
     /**
+     * Cache for snippet content
+     *
+     * @var array
+     */
+    private $snippet_content_cache = [];
+
+    /**
+     * Current post ID
+     *
+     * @var WP_Post|null
+     */
+    private $current_post = null;
+
+    /**
      * Get instance
      *
      * @return Content_Injector
@@ -66,50 +80,37 @@ class Content_Injector
             return $content;
         }
 
-        global $post;
-        if (!$post || !isset($post->ID)) {
-            return $content;
-        }
-
-        $post_id   = $post->ID;
-        $post_type = $post->post_type;
-        $snippets  = $this->get_matching_snippets($post_id, $post_type);
-        if (empty($snippets)) {
-            return $content;
-        }
-
-        // Get settings
+        $content_object = new Content_Object();
         $settings = Settings::get_instance();
         $display_option = $settings->get_display_option();
+        $display_by_category_option = $settings->get_display_by_category_option();
         $space_gap = $settings->get_space_gap();
 
         // Separate snippets by location and sort by priority
         $before_snippets = [];
         $after_snippets = [];
-        $before_count = 0;
-        $after_count = 0;
-        
-        foreach ($snippets as $snippet) {
-            $location = get_field('g_snippet_location', $snippet->ID);
+        $categories_attached = [];
+        $snippets = [];
+        foreach ($content_object->get_snippets() as $snippet) {
+            $snippet_data = $content_object->get_snippet_data($snippet);
+            $location = $snippet_data['location'];
             if (!$location) {
-                $location = 'after'; // Default to after
+                $location = 'after';
             }
 
-            // Apply display option: if "first", only show first snippet per location
-            if ($display_option === 'first') {
-                if ($location === 'before' && $before_count > 0) {
-                    continue;
-                }
-                if ($location === 'after' && $after_count > 0) {
+            if ($snippet_data['has_categories'] && $display_by_category_option === 'first') {
+                $is_category_attached = array_intersect($snippet_data['matching_categories'], $categories_attached);
+                if (!empty($is_category_attached)) {
                     continue;
                 }
             }
-
+            
+            $categories_attached = array_merge($categories_attached, $snippet_data['matching_categories']);
             $snippet_content = sprintf(
                 '<div id="g-snippet-%s" class="g-snippet g-snippet-%s">%s</div>', 
                 $snippet->ID, 
                 $snippet->ID, 
-                $this->get_snippet_content($snippet->ID)
+                $this->get_snippet_content($snippet)
             );
             if (empty($snippet_content)) {
                 continue;
@@ -117,11 +118,11 @@ class Content_Injector
 
             if ($location === 'before') {
                 $before_snippets[] = $snippet_content;
-                $before_count++;
             } else {
                 $after_snippets[] = $snippet_content;
-                $after_count++;
             }
+
+            $snippets[] = $snippet;
         }
 
         // Apply space gap to snippets (except the last one in each group)
@@ -144,133 +145,6 @@ class Content_Injector
         return apply_filters('g_snippets_content_to_display', $content_to_display, $snippets);
     }
 
-    /**
-     * Get all matching snippets for current post, sorted by priority
-     *
-     * @param int    $post_id   Current post ID
-     * @param string $post_type Current post type
-     * @return array Array of matching snippet posts, sorted by priority (lowest first)
-     */
-    private function get_matching_snippets($post_id, $post_type)
-    {
-        // Check cache first
-        $cache_key = "{$post_id}_{$post_type}";
-        if (isset($this->snippet_cache[$cache_key])) {
-            return $this->snippet_cache[$cache_key];
-        }
-
-        // Get all active snippets
-        $snippets = $this->get_active_snippets();
-        if (empty($snippets)) {
-            $this->snippet_cache[$cache_key] = [];
-            return [];
-        }
-
-        $matching_snippets = [];
-        // Filter snippets by matching criteria
-        foreach ($snippets as $snippet) {
-            if ($this->snippet_matches($snippet, $post_id, $post_type)) {
-                $matching_snippets[] = $snippet;
-            }
-        }
-
-        if (empty($matching_snippets)) {
-            $this->snippet_cache[$cache_key] = [];
-            return [];
-        }
-
-        // Sort snippets by priority (lowest number = highest priority = first)
-        $sorted_snippets = $this->sort_snippets_by_priority($matching_snippets);
-
-        // Cache result
-        $this->snippet_cache[$cache_key] = $sorted_snippets;
-
-        return $sorted_snippets;
-    }
-
-    /**
-     * Get all active snippets
-     *
-     * @return array Array of WP_Post objects
-     */
-    private function get_active_snippets()
-    {
-        $args = [
-            'post_type'      => 'g_snippet',
-            'post_status'    => 'publish',
-            'posts_per_page' => -1,
-            'orderby'        => 'meta_value_num',
-            'meta_key'       => 'g_snippet_priority',
-            'order'          => 'ASC',
-        ];
-
-        $query = new \WP_Query($args);
-        $snippets = [];
-
-        if ($query->have_posts()) {
-            foreach ($query->posts as $snippet) {
-                // Check if snippet is active
-                $active = get_field('g_snippet_active', $snippet->ID);
-                if ($active === false || $active === null) {
-                    continue;
-                }
-
-                $snippets[] = $snippet;
-            }
-        }
-
-        wp_reset_postdata();
-
-        return $snippets;
-    }
-
-    /**
-     * Check if snippet matches current post
-     *
-     * @param \WP_Post $snippet   Snippet post object
-     * @param int       $post_id  Current post ID
-     * @param string    $post_type Current post type
-     * @return bool True if snippet matches
-     */
-    private function snippet_matches($snippet, $post_id, $post_type)
-    {
-        $snippet_post_types = get_field('g_snippet_post_types', $snippet->ID);   
-        if (empty($snippet_post_types) || !is_array($snippet_post_types)) {
-            $snippet_post_types = ['post'];
-        }
-
-        if (!in_array($post_type, $snippet_post_types, true)) {
-            return false;
-        }
-
-        $snippet_categories = get_field('g_snippet_categories', $snippet->ID);        
-        if (!empty($snippet_categories)) {
-            $snippet_category_ids = is_array($snippet_categories) ? $snippet_categories : [$snippet_categories];
-            $post_category_ids = wp_get_post_categories($post_id);
-            $matching_categories = array_intersect($snippet_category_ids, $post_category_ids);
-            if (empty($matching_categories)) {
-                return false;
-            }
-        }
-
-        $include_posts = get_field('g_snippet_include_posts', $snippet->ID);        
-        if (!empty($include_posts)) {
-            $include_ids = is_array($include_posts) ? $include_posts : [$include_posts];
-            if (!in_array($post_id, $include_ids, true)) {
-                return false;
-            }
-        }
-
-        $exclude_posts = get_field('g_snippet_exclude_posts', $snippet->ID);        
-        if (!empty($exclude_posts)) {
-            $exclude_ids = is_array($exclude_posts) ? $exclude_posts : [$exclude_posts];
-            if (in_array($post_id, $exclude_ids, true)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     /**
      * Sort snippets by priority (lowest number = highest priority = first)
@@ -313,17 +187,11 @@ class Content_Injector
     /**
      * Get snippet content
      *
-     * @param int $snippet_id Snippet post ID
+     * @param WP_Post $snippet Snippet post object
      * @return string Snippet content
      */
-    private function get_snippet_content($snippet_id)
+    private function get_snippet_content($snippet)
     {
-        $snippet = get_post($snippet_id);
-        
-        if (!$snippet) {
-            return '';
-        }
-
         return apply_filters('g_snippets_snippet_content', $snippet->post_content, $snippet);
     }
 

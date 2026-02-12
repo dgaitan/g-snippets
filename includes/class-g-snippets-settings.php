@@ -81,6 +81,7 @@ class Settings
                 'sanitize_callback' => [$this, 'sanitize_settings'],
                 'default' => [
                     'display_options' => 'all',
+                    'display_by_category_option' => 'all',
                     'space_gap' => '',
                     'custom_css' => '',
                 ],
@@ -98,6 +99,14 @@ class Settings
             'display_options',
             __('Display Options', 'g-snippets'),
             [$this, 'render_display_options_field'],
+            'g-snippets-settings',
+            'g_snippets_display_section'
+        );
+
+        add_settings_field(
+            'display_by_category_option',
+            __('Display By Category', 'g-snippets'),
+            [$this, 'render_display_by_category_field'],
             'g-snippets-settings',
             'g_snippets_display_section'
         );
@@ -143,6 +152,15 @@ class Settings
                 : 'all';
         } else {
             $sanitized['display_options'] = 'all';
+        }
+
+        // Display by category option
+        if (isset($input['display_by_category_option'])) {
+            $sanitized['display_by_category_option'] = in_array($input['display_by_category_option'], ['all', 'first'], true)
+                ? $input['display_by_category_option']
+                : 'all';
+        } else {
+            $sanitized['display_by_category_option'] = 'all';
         }
 
         // Space gap
@@ -197,6 +215,28 @@ class Settings
         </select>
         <p class="description">
             <?php esc_html_e('Select whether to display all matching snippets or only the first one per location (before/after) based on priority.', 'g-snippets'); ?>
+        </p>
+        <?php
+    }
+
+    /**
+     * Render display by category field
+     */
+    public function render_display_by_category_field()
+    {
+        $settings = $this->get_settings();
+        $value = $settings['display_by_category_option'] ?? 'all';
+        ?>
+        <select name="<?php echo esc_attr($this->option_name); ?>[display_by_category_option]" id="display_by_category_option">
+            <option value="all" <?php selected($value, 'all'); ?>>
+                <?php esc_html_e('All that matches', 'g-snippets'); ?>
+            </option>
+            <option value="first" <?php selected($value, 'first'); ?>>
+                <?php esc_html_e('First matches by Priority', 'g-snippets'); ?>
+            </option>
+        </select>
+        <p class="description">
+            <?php esc_html_e('When a snippet has categories selected and the post has more than one matching category, show all matching snippets or only the first per location (before/after) by priority.', 'g-snippets'); ?>
         </p>
         <?php
     }
@@ -295,6 +335,7 @@ class Settings
     {
         $defaults = [
             'display_options' => 'all',
+            'display_by_category_option' => 'all',
             'space_gap' => '',
             'custom_css' => '',
         ];
@@ -312,6 +353,17 @@ class Settings
     {
         $settings = $this->get_settings();
         return $settings['display_options'] ?? 'all';
+    }
+
+    /**
+     * Get display by category option
+     *
+     * @return string 'all' or 'first'
+     */
+    public function get_display_by_category_option()
+    {
+        $settings = $this->get_settings();
+        return $settings['display_by_category_option'] ?? 'all';
     }
 
     /**

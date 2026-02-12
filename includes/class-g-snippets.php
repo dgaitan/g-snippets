@@ -53,6 +53,7 @@ class G_Snippets
     {
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-post-type.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-acf.php';
+        require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-content-object.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-content-injector.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-list-table.php';
         require_once G_SNIPPETS_PLUGIN_DIR . 'includes/class-g-snippets-settings.php';
