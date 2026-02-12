@@ -61,6 +61,16 @@ class Content_Object
     }
 
     /**
+     * Get post categories
+     *
+     * @return array Array of category IDs
+     */
+    public function get_categories()
+    {
+        return $this->post_categories;
+    }
+
+    /**
      * Get snippets
      *
      * @return array Array of WP_Post objects

@@ -99,7 +99,7 @@ class Content_Injector
             }
 
             if ($snippet_data['has_categories'] && $display_by_category_option === 'first') {
-                $is_category_attached = array_intersect($snippet_data['matching_categories'], $categories_attached);
+                $is_category_attached = array_intersect($categories_attached, $content_object->get_categories());
                 if (!empty($is_category_attached)) {
                     continue;
                 }
