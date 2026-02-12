@@ -4,7 +4,7 @@
  * Plugin Name: G-Snippets
  * Plugin URI: https://github.com/dgaitan
  * Description: Add reusable content snippets to posts and pages using Gutenberg editor. Manage snippets with priority-based matching and flexible display rules.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: David Gaitan
  * License: GPL v2 or later
  * Text Domain: g-snippets

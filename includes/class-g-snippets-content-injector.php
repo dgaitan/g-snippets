@@ -91,6 +91,10 @@ class Content_Injector
         $after_snippets = [];
         $categories_attached = [];
         $snippets = [];
+        if (!$content_object->get_snippets()) {
+            return $content;
+        }
+        
         foreach ($content_object->get_snippets() as $snippet) {
             $snippet_data = $content_object->get_snippet_data($snippet);
             $location = $snippet_data['location'];
